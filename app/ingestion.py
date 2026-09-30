@@ -4,12 +4,12 @@ from app.embeddings import create_embeddings
 from app.vector_store import add_documents
 
 
-def ingest_pdf(file_path: str) -> int:
+def ingest_pdf(file_path: str, filename: str) -> tuple[str, int]:
     """
     Process a PDF and store its chunks in ChromaDB.
 
     Returns:
-        Number of chunks stored.
+        A tuple containing the document ID and number of chunks.
     """
 
     # 1. Extract text
@@ -27,10 +27,11 @@ def ingest_pdf(file_path: str) -> int:
     # 3. Create embeddings
     embeddings = create_embeddings(chunks)
 
-    # 4. Store chunks and embeddings
-    add_documents(
+    # 4. Store chunks and metadata
+    document_id = add_documents(
         documents=chunks,
         embeddings=embeddings,
+        filename=filename,
     )
 
-    return len(chunks)
+    return document_id, len(chunks)

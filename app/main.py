@@ -33,11 +33,15 @@ async def upload_pdf(file: UploadFile = File(...)):
     with open(file_path, "wb") as buffer:
         buffer.write(await file.read())
 
-    chunks_created = ingest_pdf(file_path)
+    document_id, chunks_created = ingest_pdf(
+        file_path=file_path, 
+        filename=file.filename,
+    )
 
     return {
         "filename": file.filename,
         "chunks_created": chunks_created,
+        "document_id": document_id,
         "status": "processed",
     }
 
