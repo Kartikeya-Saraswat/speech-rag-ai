@@ -211,7 +211,11 @@
         const uploadButton = document.getElementById("uploadButton");
         const pdfFile = document.getElementById("pdfFile");
 
-        const recordButton = document.getElementById("recordButton");
+        const recordBtn = document.getElementById("recordBtn");
+
+        recordBtn.addEventListener("click", async () => {
+            // recording logic
+        });
         const status = document.getElementById("status");
         const answer = document.getElementById("answer");
 
@@ -261,14 +265,14 @@
            MICROPHONE
         ----------------------------- */
 
-        recordButton.addEventListener("click", async () => {
+        recordBtn.addEventListener("click", async () => {
 
             if (mediaRecorder && mediaRecorder.state === "recording") {
 
                 mediaRecorder.stop();
 
-                recordButton.textContent = "🎙️ Start Recording";
-                recordButton.classList.remove("recording");
+                recordBtn.textContent = "🎙️ Start Recording";
+                recordBtn.classList.remove("recording");
 
                 return;
             }
@@ -305,8 +309,8 @@
 
                 mediaRecorder.start();
 
-                recordButton.textContent = "⏹️ Stop Recording";
-                recordButton.classList.add("recording");
+                recordBtn.textContent = "⏹️ Stop Recording";
+                recordBtn.classList.add("recording");
 
                 status.textContent = "Listening... Speak now.";
 

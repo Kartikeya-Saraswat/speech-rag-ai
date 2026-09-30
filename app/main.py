@@ -1,6 +1,11 @@
 import os
 import tempfile
 
+from app.ingestion import ingest_pdf
+from app.rag import answer_question
+from app.speech import transcribe_audio
+from app.tts import synthesize_speech
+from app.ingestion import ingest_pdf
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import Response, FileResponse
 from fastapi.staticfiles import StaticFiles
