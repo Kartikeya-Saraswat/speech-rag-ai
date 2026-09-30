@@ -2,13 +2,9 @@ import os
 import tempfile
 
 from fastapi import FastAPI, UploadFile, File
-from fastapi.responses import Response
+from fastapi.responses import Response, FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
-
-from app.rag import answer_question
-from app.ingestion import ingest_pdf
-from app.speech import transcribe_audio
-from app.tts import synthesize_speech
 
 
 app = FastAPI(
@@ -16,6 +12,13 @@ app = FastAPI(
     description="Conversational AI with PDF-based RAG",
     version="0.1.0",
 )
+
+app.mount("/static", StaticFiles(directory="frontend"), name="static")
+
+
+@app.get("/")
+def frontend():
+    return FileResponse("frontend/index.html")
 
 
 class QuestionRequest(BaseModel):
