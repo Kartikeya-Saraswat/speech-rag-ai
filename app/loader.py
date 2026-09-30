@@ -1,4 +1,4 @@
-import fitz
+import pymupdf
 
 
 def extract_text_from_pdf(file_path: str) -> str:
@@ -12,7 +12,7 @@ def extract_text_from_pdf(file_path: str) -> str:
         Extracted text from all pages.
     """
 
-    document = fitz.open(file_path)
+    document = pymupdf.open(file_path)
 
     text = ""
 
