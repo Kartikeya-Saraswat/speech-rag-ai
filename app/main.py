@@ -1,7 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
 from pydantic import BaseModel
 
 from app.rag import answer_question
+from app.ingestion import ingest_pdf
 
 
 app = FastAPI(
@@ -25,6 +26,20 @@ def health_check():
         "status": "healthy"
     }
 
+@app.post("/upload")
+async def upload_pdf(file: UploadFile = File(...)):
+    file_path = f"data/uploads/{file.filename}"
+
+    with open(file_path, "wb") as buffer:
+        buffer.write(await file.read())
+
+    chunks_created = ingest_pdf(file_path)
+
+    return {
+        "filename": file.filename,
+        "chunks_created": chunks_created,
+        "status": "processed",
+    }
 
 @app.post("/ask", response_model=AnswerResponse)
 def ask_question(request: QuestionRequest):
