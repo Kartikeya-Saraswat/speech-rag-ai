@@ -1,8 +1,14 @@
+import os
+import tempfile
+
 from fastapi import FastAPI, UploadFile, File
+from fastapi.responses import Response
 from pydantic import BaseModel
 
 from app.rag import answer_question
 from app.ingestion import ingest_pdf
+from app.speech import transcribe_audio
+from app.tts import synthesize_speech
 
 
 app = FastAPI(
@@ -52,3 +58,50 @@ def ask_question(request: QuestionRequest):
     return {
         "answer": answer
     }
+
+@app.post("/voice")
+async def voice_question(file: UploadFile = File(...)):
+    """
+    Accept an audio question and return a spoken RAG answer.
+    """
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+
+        # 1. Save incoming audio
+        input_path = os.path.join(
+            temp_dir,
+            "input.wav",
+        )
+
+        with open(input_path, "wb") as buffer:
+            buffer.write(await file.read())
+
+        # 2. Speech → Text
+        question = transcribe_audio(input_path)
+
+        # 3. RAG → Answer
+        answer = answer_question(question)
+
+        # 4. Text → Speech
+        output_path = os.path.join(
+            temp_dir,
+            "response.wav",
+        )
+
+        synthesize_speech(
+            text=answer,
+            output_path=output_path,
+        )
+
+        # 5. Read audio before temporary directory is deleted
+        with open(output_path, "rb") as audio_file:
+            audio_data = audio_file.read()
+
+    # 6. Return audio bytes
+    return Response(
+        content=audio_data,
+        media_type="audio/wav",
+        headers={
+            "Content-Disposition": 'attachment; filename="response.wav"',
+        },
+    )
