@@ -13,7 +13,7 @@ simple browser frontend for PDF upload and microphone interaction
 
 ``` text
                          ┌──────────────────────┐
-                         │      Browser UI       │
+                         │      Browser UI      │
                          │                      │
                          │  PDF Upload + Mic    │
                          └──────────┬───────────┘
